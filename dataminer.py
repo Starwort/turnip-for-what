@@ -1,8 +1,8 @@
-#!/opt/python-3.8.0/bin/python3
+#!/usr/bin/python3
 import struct
 from concurrent.futures import ProcessPoolExecutor
 from sys import stdout
-from typing import Any, List, Optional, TextIO, Tuple, Union, cast
+from typing import Any, Iterable, List, Optional, TextIO, Tuple, Union, cast
 
 import click
 
@@ -382,6 +382,7 @@ def brute_force_from_options(
     progbar: Any = None,
 ) -> List[Tuple[MContext, int, MContext, int]]:
     new_options: List[Tuple[MContext, int, MContext, int]] = []
+    _: Any
     for _, _, seeds, pattern in options[portion]:
         if not Random(*seeds).randint(90, 110) == buy_price:
             step_progbar(progbar)
@@ -521,6 +522,7 @@ def dispatch_no_file_brute_force(
     chunks = get_chunks(2 ** 32, proc_count, proc_nos)
     if len(chunks) == 1:
         chunk = chunks[0]
+        progbar: Iterable
         with click.progressbar(
             length=chunk.stop - chunk.start,
             label="Brute-forcing [{}-{}]".format(chunk.start, chunk.stop),
@@ -591,10 +593,16 @@ def cmd_brute_force(
     SELL_PRICES: Prices for which turnips were saleable throughout the week, in the
                  morning and the afternoon of each day.
     """
+    new_prices: Optional[int] = []
+    for price in sell_prices:
+        if price != -1:
+            new_prices.append(price)
+        else:
+            new_prices.append(None)
     if input_file is not None:
         dispatch_file_brute_force(
             buy_price,
-            sell_prices,
+            new_prices,
             input_file,
             out_file,
             processes,
@@ -609,7 +617,7 @@ def cmd_brute_force(
             )
             exit(1)
         dispatch_no_file_brute_force(
-            buy_price, sell_prices, out_file, processes, process
+            buy_price, new_prices, out_file, processes, process
         )
 
 
