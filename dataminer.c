@@ -62,10 +62,15 @@ typedef struct _TurnipPrices {
     uint32 what_pattern;
     int32 tmp40;
     Random rng;
+    bool pattern_fits;
 } TurnipPrices;
 
-TurnipPrices calculate(TurnipPrices turnips) {
+TurnipPrices calculate(TurnipPrices turnips, int base_price, int prices[]) {
     turnips.base_price = randint(90, 110);
+    if (turnips.base_price != base_price) {
+        turnips.pattern_fits = false;
+        return turnips;
+    }
     int chance = randint(0, 99);
 
     int next_pattern;
@@ -144,33 +149,58 @@ TurnipPrices calculate(TurnipPrices turnips) {
         hi_3 = randint(0, hi_2 - 1);
 
         for (int i = 0; i < hi_1; i++) {
-            turnips.sell_prices[work++] =
+            turnips.sell_prices[work] =
                 intceil(randfloat(0.9, 1.4) * turnips.base_price);
+            if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+                turnips.pattern_fits = false;
+                return turnips;
+            }
+            work++;
         }
 
         rate = randfloat(.8, .6);
         for (int i = 0; i < dec_1; i++) {
-            turnips.sell_prices[work++] = intceil(rate * turnips.base_price);
+            turnips.sell_prices[work] = intceil(rate * turnips.base_price);
+            if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+                turnips.pattern_fits = false;
+                return turnips;
+            }
+            work++;
             rate -= 0.04;
             rate -= randfloat(0, .06);
         }
 
         for (int i = 0; i < hi_2 - hi_3; i++) {
-            turnips.sell_prices[work++] =
+            turnips.sell_prices[work] =
                 intceil(randfloat(.9, 1.4) * turnips.base_price);
+            if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+                turnips.pattern_fits = false;
+                return turnips;
+            }
+            work++;
         }
 
         rate = randfloat(0.8, 0.6);
         for (int i = 0; i < dec_2; i++) {
-            turnips.sell_prices[work++] = intceil(rate * turnips.base_price);
+            turnips.sell_prices[work] = intceil(rate * turnips.base_price);
+            if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+                turnips.pattern_fits = false;
+                return turnips;
+            }
+            work++;
             rate -= 0.04;
             rate -= randfloat(0, 0.06);
         }
 
         // high phase 3
         for (int i = 0; i < hi_3; i++) {
-            turnips.sell_prices[work++] =
+            turnips.sell_prices[work] =
                 intceil(randfloat(0.9, 1.4) * turnips.base_price);
+            if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+                turnips.pattern_fits = false;
+                return turnips;
+            }
+            work++;
         }
         break;
     case 1:
@@ -179,17 +209,50 @@ TurnipPrices calculate(TurnipPrices turnips) {
         rate = randfloat(0.9, 0.85);
         for (work = 2; work < peak_start; work++) {
             turnips.sell_prices[work] = intceil(rate * turnips.base_price);
+            if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+                turnips.pattern_fits = false;
+                return turnips;
+            }
             rate -= 0.03;
             rate -= randfloat(0, 0.02);
         }
-        turnips.sell_prices[work++] = intceil(randfloat(0.9, 1.4) * turnips.base_price);
-        turnips.sell_prices[work++] = intceil(randfloat(1.4, 2.0) * turnips.base_price);
-        turnips.sell_prices[work++] = intceil(randfloat(2.0, 6.0) * turnips.base_price);
-        turnips.sell_prices[work++] = intceil(randfloat(1.4, 2.0) * turnips.base_price);
-        turnips.sell_prices[work++] = intceil(randfloat(0.9, 1.4) * turnips.base_price);
+        turnips.sell_prices[work] = intceil(randfloat(0.9, 1.4) * turnips.base_price);
+        if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+            turnips.pattern_fits = false;
+            return turnips;
+        }
+        work++;
+        turnips.sell_prices[work] = intceil(randfloat(1.4, 2.0) * turnips.base_price);
+        if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+            turnips.pattern_fits = false;
+            return turnips;
+        }
+        work++;
+        turnips.sell_prices[work] = intceil(randfloat(2.0, 6.0) * turnips.base_price);
+        if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+            turnips.pattern_fits = false;
+            return turnips;
+        }
+        work++;
+        turnips.sell_prices[work] = intceil(randfloat(1.4, 2.0) * turnips.base_price);
+        if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+            turnips.pattern_fits = false;
+            return turnips;
+        }
+        work++;
+        turnips.sell_prices[work] = intceil(randfloat(0.9, 1.4) * turnips.base_price);
+        if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+            turnips.pattern_fits = false;
+            return turnips;
+        }
+        work++;
         for (; work < 14; work++) {
             turnips.sell_prices[work] =
                 intceil(randfloat(0.4, 0.9) * turnips.base_price);
+            if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+                turnips.pattern_fits = false;
+                return turnips;
+            }
         }
         break;
     case 2:
@@ -198,6 +261,10 @@ TurnipPrices calculate(TurnipPrices turnips) {
         rate -= randfloat(0, 0.05);
         for (work = 2; work < 14; work++) {
             turnips.sell_prices[work] = intceil(rate * turnips.base_price);
+            if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+                turnips.pattern_fits = false;
+                return turnips;
+            }
             rate -= 0.03;
             rate -= randfloat(0, 0.02);
         }
@@ -210,25 +277,58 @@ TurnipPrices calculate(TurnipPrices turnips) {
         rate = randfloat(0.9, 0.4);
         for (work = 2; work < peak_start; work++) {
             turnips.sell_prices[work] = intceil(rate * turnips.base_price);
+            if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+                turnips.pattern_fits = false;
+                return turnips;
+            }
             rate -= 0.03;
             rate -= randfloat(0, 0.02);
         }
 
-        turnips.sell_prices[work++] =
+        turnips.sell_prices[work] =
             intceil(randfloat(0.9, 1.4) * (float) turnips.base_price);
-        turnips.sell_prices[work++] = intceil(randfloat(0.9, 1.4) * turnips.base_price);
+        if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+            turnips.pattern_fits = false;
+            return turnips;
+        }
+        work++;
+        turnips.sell_prices[work] = intceil(randfloat(0.9, 1.4) * turnips.base_price);
+        if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+            turnips.pattern_fits = false;
+            return turnips;
+        }
+        work++;
         rate = randfloat(1.4, 2.0);
-        turnips.sell_prices[work++] =
+        turnips.sell_prices[work] =
             intceil(randfloat(1.4, rate) * turnips.base_price) - 1;
-        turnips.sell_prices[work++] = intceil(rate * turnips.base_price);
-        turnips.sell_prices[work++] =
+        if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+            turnips.pattern_fits = false;
+            return turnips;
+        }
+        work++;
+        turnips.sell_prices[work] = intceil(rate * turnips.base_price);
+        if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+            turnips.pattern_fits = false;
+            return turnips;
+        }
+        work++;
+        turnips.sell_prices[work] =
             intceil(randfloat(1.4, rate) * turnips.base_price) - 1;
+        if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+            turnips.pattern_fits = false;
+            return turnips;
+        }
+        work++;
 
         // decreasing phase after the peak
         if (work < 14) {
             rate = randfloat(0.9, 0.4);
             for (; work < 14; work++) {
                 turnips.sell_prices[work] = intceil(rate * turnips.base_price);
+                if (prices[work] != -1 && prices[work] != turnips.sell_prices[work]) {
+                    turnips.pattern_fits = false;
+                    return turnips;
+                }
                 rate -= 0.03;
                 rate -= randfloat(0, 0.02);
             }
@@ -238,6 +338,7 @@ TurnipPrices calculate(TurnipPrices turnips) {
 
     turnips.sell_prices[0] = 0;
     turnips.sell_prices[1] = 0;
+    turnips.pattern_fits = true;
     return turnips;
 }
 
@@ -252,10 +353,14 @@ int main(int argc, char **argv) {
         puts("Pass buy price, then sale prices. -1 to mark unknown");
         return 1;
     }
-    int sell_prices[argc];
+    int sell_prices[14];
     int buy_price = atoi(argv[1]);
-    for (int arg = 2; arg < argc; arg++) {
+    int arg;
+    for (arg = 2; arg < argc; arg++) {
         sell_prices[arg] = atoi(argv[arg]);
+    }
+    for (; arg < 14; arg++) {
+        sell_prices[arg] = -1;
     }
     TurnipPrices turnips;
     Random random;
@@ -272,7 +377,7 @@ int main(int argc, char **argv) {
                                                   (turnips.rng.m_context[2] >> 30)) +
                                    4;
         turnips.what_pattern = 1;
-        turnips = calculate(turnips);
+        turnips = calculate(turnips, buy_price, sell_prices);
         fprintf(stderr, "Pattern %u\nPrices", 1);
         for (int i = 0; i < 14; i++) {
             fprintf(stderr, " %u", turnips.sell_prices[i]);
@@ -282,44 +387,59 @@ int main(int argc, char **argv) {
     }
     uint32 m_context[4];
     uint64 next_print = 1000;
-    uint32 seed = 0;
+    uint32 seed_1 = 0, seed_2 = 0, seed_3 = 0, seed_4 = 0;
     do {
-        m_context[0] = 0x6C078965u * (seed ^ (seed >> 30)) + 1;
-        m_context[1] = 0x6C078965u * (m_context[0] ^ (m_context[0] >> 30)) + 2;
-        m_context[2] = 0x6C078965u * (m_context[1] ^ (m_context[1] >> 30)) + 3;
-        m_context[3] = 0x6C078965u * (m_context[2] ^ (m_context[2] >> 30)) + 4;
-        memcpy(turnips.rng.m_context, m_context, sizeof m_context);
-        if (randint(90, 110) != buy_price) {
-            if ((uint64) seed * 4 > next_print) {
-                print_prog(seed, 0);
-                next_print += 1000;
-            }
-            seed++;
-            continue;
-        }
-        for (int pattern = 0; pattern < 4; pattern++) {
-            memcpy(turnips.rng.m_context, m_context, sizeof m_context);
-            turnips.what_pattern = pattern;
-            turnips = calculate(turnips);
-            for (int i = 2; i < min(argc, 14); i++) {
-                if (sell_prices[i] == -1) {
-                    continue;
-                }
-                if (sell_prices[i] != turnips.sell_prices[i]) {
-                    goto skip_print;
-                }
-            }
-            printf("%u %u %u %u %u %u %u %u %u %u\n", m_context[0], m_context[1],
-                   m_context[2], m_context[3], pattern, turnips.rng.m_context[0],
-                   turnips.rng.m_context[1], turnips.rng.m_context[2],
-                   turnips.rng.m_context[3], turnips.what_pattern);
+        do {
+            do {
+                do {
+                    m_context[0] = seed_1;
+                    m_context[1] = seed_2;
+                    m_context[2] = seed_3;
+                    m_context[3] = seed_4;
+                    memcpy(turnips.rng.m_context, m_context, sizeof m_context);
+                    if (randint(90, 110) != buy_price) {
+                        // if ((uint64) seed * 4 > next_print) {
+                        //     print_prog(seed, 0);
+                        //     next_print += 1000;
+                        // }
+                        // seed++;
+                        continue;
+                    }
+                    for (int pattern = 0; pattern < 4; pattern++) {
+                        memcpy(turnips.rng.m_context, m_context, sizeof m_context);
+                        turnips.what_pattern = pattern;
+                        turnips = calculate(turnips, buy_price, sell_prices);
+                        if (!turnips.pattern_fits) {
+                            continue;
+                        }
+                        // for (int i = 2; i < min(argc, 14); i++) {
+                        //     if (sell_prices[i] == -1) {
+                        //         continue;
+                        //     }
+                        //     if (sell_prices[i] != turnips.sell_prices[i]) {
+                        //         goto skip_print;
+                        //     }
+                        // }
+                        printf("%u %u %u %u %u %u %u %u %u %u\n", m_context[0],
+                               m_context[1], m_context[2], m_context[3], pattern,
+                               turnips.rng.m_context[0], turnips.rng.m_context[1],
+                               turnips.rng.m_context[2], turnips.rng.m_context[3],
+                               turnips.what_pattern);
 
-        skip_print:
-            if ((uint64) seed * 4 + (uint64) pattern + 1 > next_print) {
-                print_prog(seed, pattern);
-                next_print += 1000;
-            }
-        }
-        seed++;
-    } while (seed != 0);
+                        // skip_print:
+                        //     if ((uint64) seed * 4 + (uint64) pattern + 1 >
+                        //     next_print) {
+                        //         print_prog(seed, pattern);
+                        //         next_print += 1000;
+                        //     }
+                        // }
+                        seed_4++;
+                    }
+                } while (seed_4 != 0);
+                seed_3++;
+            } while (seed_3 != 0);
+            seed_2++;
+        } while (seed_2 != 0);
+        seed_1++;
+    } while (seed_1 != 0);
 }

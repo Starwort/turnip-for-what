@@ -461,6 +461,74 @@ def predict(pattern, seed, seeds):
         main(pattern, seed)
 
 
+@cli.command(name="predict-ranges")
+@click.help_option("--help", "-h")
+@click.argument("file", nargs=1, type=click.File("r"))
+@click.option(
+    "--out-file",
+    "-o",
+    type=click.File("w"),
+    default=stdout,
+    help="File to which to write the results. Defaults to stdout",
+)
+def predict_ranges(file, out_file):
+    data = import_(file)
+    last_week_min = [999 for i in range(13)]
+    last_week_max = [0 for i in range(13)]
+    last_week_patterns = set()
+    next_week_min = [999 for i in range(13)]
+    next_week_max = [0 for i in range(13)]
+    next_week_patterns = set()
+    for last_seeds, last_pattern, next_seeds, next_pattern in data:
+        last_week = TurnipPrices(last_pattern, *last_seeds)
+        last_week.calculate()
+        last_week_max[0] = max(last_week_max[0], last_week.base_price)
+        last_week_min[0] = min(last_week_min[0], last_week.base_price)
+        last_week_patterns.add(last_week.what_pattern)
+        for i, (price, min_price, max_price) in enumerate(
+            zip(last_week.sell_prices[2:], last_week_min[1:], last_week_max[1:]),
+            start=1,
+        ):
+            if price < min_price:
+                last_week_min[i] = price
+            if price > max_price:
+                last_week_max[i] = price
+
+        next_week = TurnipPrices(next_pattern, *next_seeds)
+        next_week.calculate()
+        next_week_max[0] = max(next_week_max[0], next_week.base_price)
+        next_week_min[0] = min(next_week_min[0], next_week.base_price)
+        next_week_patterns.add(next_week.what_pattern)
+        for i, (price, min_price, max_price) in enumerate(
+            zip(next_week.sell_prices[2:], next_week_min[1:], next_week_max[1:]),
+            start=1,
+        ):
+            if price < min_price:
+                next_week_min[i] = price
+            if price > max_price:
+                next_week_max[i] = price
+    print(
+        (
+            "Current pattern possibilities: {0}\n"
+            " Sunday  Monday Tuesday Wednesday Thursday  Friday Saturday\n"
+            "{1:>3}-{14:>3} {2:>3}-{15:>3} {4:>3}-{17:>3}   {6:>3}-{19:>3}  {8:>3}-{21:>3} {10:>3}-{23:>3}  {12:>3}-{25:>3}\n"
+            "        {3:>3}-{16:>3} {5:>3}-{18:>3}   {7:>3}-{20:>3}  {9:>3}-{22:>3} {11:>3}-{24:>3}  {13:>3}-{26:>3}\n\n"
+            "Next pattern possibilities: {27}\n"
+            " Sunday  Monday Tuesday Wednesday Thursday  Friday Saturday\n"
+            "{28:>3}-{41:>3} {29:>3}-{42:>3} {31:>3}-{44:>3}   {33:>3}-{46:>3}  {35:>3}-{48:>3} {37:>3}-{50:>3}  {39:>3}-{52:>3}\n"
+            "        {30:>3}-{43:>3} {32:>3}-{45:>3}   {34:>3}-{47:>3}  {36:>3}-{49:>3} {38:>3}-{51:>3}  {40:>3}-{53:>3}\n\n"
+        ).format(
+            ", ".join(map(str, sorted(last_week_patterns))),
+            *last_week_min,
+            *last_week_max,
+            ", ".join(map(str, sorted(next_week_patterns))),
+            *next_week_min,
+            *next_week_max,
+        ),
+        file=out_file,
+    )
+
+
 def get_chunks(
     data_len: int, process_count: int, process_ids: Union[Tuple[int, ...], range]
 ) -> List[slice]:

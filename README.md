@@ -8,7 +8,7 @@ Turnip for What? is a pair of tools used for determining your island's random tu
 
 ### Seed Dataminer (C version)
 
-Ensure you use a version compatible with your system (or compile the code yourself)
+Ensure you use a version compatible with your system (or compile the code yourself). It is recommended to pipe stdout into a file (`> out.txt`)
 
 #### Linux/MacOS
 
@@ -44,12 +44,13 @@ You do not have to provide every value; `./dataminer 101 -1 101`, for example, i
 
 #### Files and Compilation System Architecture
 
-| File Name | 32/64-bit | Compilation System Information | Compiler Version | LibC version | OS Name |
-| --------- | ----------------------------------------------- | --- | --- | --- | --- |
-| dataminer-2020-04-17-0 | 64-bit | Linux 4.15.0-96-generic x86_64 | gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 | 2.27-3ubuntu | Ubuntu 18.04.4 LTS |
-| dataminer-2020-04-21-0 | 64-bit | Linux 3.10.0-693.17.1.el7.x86_64 x86_64 | gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) | glibc-2.17-260.el7_6.5.x86_64 | CentOS Linux 7 (Core) |
-| dataminer-2020-04-21-0.exe | 64-bit | Not provided | x86_64-w64-mingw32-gcc version 8.3.0 | Not provided | Fedora 30
-| dataminer-2020-04-21-1.exe | 32-bit | Not provided | i686-w64-mingw32-gcc version 8.3.0 | Not provided | Fedora 30
+| File Name | 32/64-bit | Compilation System Information | Compiler Version | LibC version | OS Name | Dataminer Version |
+| --------- | ----------------------------------------------- | --- | --- | --- | --- | --- |
+| dataminer-2020-04-17-0 | 64-bit | Linux 4.15.0-96-generic x86_64 | gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 | 2.27-3ubuntu | Ubuntu 18.04.4 LTS | 1.0-single-seed |
+| dataminer-2020-04-21-0 | 64-bit | Linux 3.10.0-693.17.1.el7.x86_64 x86_64 | gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) | glibc-2.17-260.el7_6.5.x86_64 | CentOS Linux 7 (Core) | 1.0-single-seed |
+| dataminer-2020-04-21-0.exe | 64-bit | Not provided | x86_64-w64-mingw32-gcc version 8.3.0 | Not provided | Fedora 30 | 1.0-single-seed |
+| dataminer-2020-04-21-1.exe | 32-bit | Not provided | i686-w64-mingw32-gcc version 8.3.0 | Not provided | Fedora 30 | 1.0-single-seed |
+| dataminer-2020-04-22-0 | 64-bit | Linux 4.15.0-96-generic x86_64 | gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 | 2.27-3ubuntu | Ubuntu 18.04.4 LTS | 1.0-multi-seed |
 
 If you would like to submit a compiled version of the dataminer, submit a pull request with the new dataminer compiled file as well as a new entry in this table. The filename should be `dataminer-YYYY-MM-DD-nEXT` where YYYY is the year of compilation, MM is the month of compilation, DD is the day of compilation, and n is the lowest non-negative integer for the day. EXT should be the extension for the system - nothing on non-Windows systems, and `.exe` on Windows systems.
 
@@ -82,7 +83,9 @@ python3 dataminer.py brute-force -i results_file BUY_PRICE [SELL_PRICES]...
 -P PROCESS_ID | --process PROCESS_ID # Process ID to run. If not provided, runs all processes. If provided an invalid process ID, runs no processes.
 
 # Predict the next week of sales (as well as the next seeds) using your previous pattern and previous seeds (or single-seed, if you know it)
-python3 dataminer.py predict PATTERN SEED --seeds SEED2 SEED3 SEED4
+python3 dataminer.py predict PATTERN SEED [--seeds SEED2 SEED3 SEED4]
+# Predict the ranges for the current and next weeks using your brute-force output file
+python3 dataminer.py predict-ranges FILE
 ```
 
 It is, in most circumstances, recommended to use the -o flag in combination with a filename.
