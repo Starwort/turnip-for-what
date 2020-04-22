@@ -44,11 +44,16 @@ You do not have to provide every value; `./dataminer 101 -1 101`, for example, i
 
 #### Files and Compilation System Architecture
 
-| File Name | Compiled On (BASH output of `uname -srvm`, and compiler version) |
-| --------- | ----------------------------------------------- |
-| dataminer-2020-04-17-0 | Linux 4.15.0-96-generic #97-Ubuntu SMP Wed Apr 1 03:25:46 UTC 2020 x86_64 \| gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 |
+| File Name | 32/64-bit | Compilation System Information | Compiler Version | LibC version | OS Name |
+| --------- | ----------------------------------------------- | --- | --- | --- | --- |
+| dataminer-2020-04-17-0 | 64-bit | Linux 4.15.0-96-generic x86_64 | gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 | 2.27-3ubuntu | Ubuntu 18.04.4 LTS |
+| dataminer-2020-04-21-0 | 64-bit | Linux 3.10.0-693.17.1.el7.x86_64 x86_64 | gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) | glibc-2.17-260.el7_6.5.x86_64 | CentOS Linux 7 (Core) |
+| dataminer-2020-04-21-0.exe | 64-bit | Not provided | x86_64-w64-mingw32-gcc version 8.3.0 | Not provided | Fedora 30
+| dataminer-2020-04-21-1.exe | 32-bit | Not provided | i686-w64-mingw32-gcc version 8.3.0 | Not provided | Fedora 30
 
-If you would like to submit a compiled version of the dataminer, submit a pull request with the new dataminer compiled file as well as a new entry in this table. The filename should be `dataminer-YYYY-MM-DD-n` where YYYY is the year of compilation, MM is the month of compilation, DD is the day of compilation, and n is the lowest non-negative integer for the day.
+If you would like to submit a compiled version of the dataminer, submit a pull request with the new dataminer compiled file as well as a new entry in this table. The filename should be `dataminer-YYYY-MM-DD-nEXT` where YYYY is the year of compilation, MM is the month of compilation, DD is the day of compilation, and n is the lowest non-negative integer for the day. EXT should be the extension for the system - nothing on non-Windows systems, and `.exe` on Windows systems.
+
+Compilation System Information can be obtained on Linux systems via `uname -srm`, and OS name via the PRETTY_NAME property in /etc/os-release
 
 ### Seed Dataminer and Turnip Predictor (Python version)
 
